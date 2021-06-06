@@ -30,7 +30,7 @@ services:
     container_name: "simple-service"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.whoami.rule=Host(`t.local`)"
+      - "traefik.http.routers.whoami.rule=Host(`test.nas.hyeon.pro`)"
       - "traefik.http.routers.whoami.entrypoints=websecure"
       - "traefik.http.routers.whoami.tls.certresolver=myresolver"
 
