@@ -1,0 +1,21 @@
+################################################################
+# Synology Router
+# Synology RT2600ac
+# custom url: https://rt.nas.hyeon.pro/
+################################################################
+http:
+  routers:
+    syno_srm:
+      entryPoints:
+        - websecure
+      service: syno_srm
+      rule: Host(`rt.nas.hyeon.pro`)
+      tls:
+        certResolver: leresolver
+
+  services:
+    syno_srm:
+      loadBalancer:
+        servers:
+          - url: http://192.168.1.1:8000
+        passHostHeader: true

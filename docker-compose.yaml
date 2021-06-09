@@ -8,6 +8,9 @@ networks:
   db_net:
     external:
       name: db_net
+  db_work:
+    external:
+      name: db_work
 
 ########################### SERVICES
 services:
@@ -32,8 +35,9 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./traefik/traefik.yaml:/etc/traefik/traefik.yaml
+      - ./traefik/rules:/rules
       - ./traefik/acme:/acme
+      - ./traefik/traefik.yaml:/etc/traefik/traefik.yaml
     labels:
       - traefik.enable=true
       ## HTTP Routers
@@ -44,4 +48,5 @@ services:
       - traefik.http.services.202106__traefik.loadbalancer.server.port=8080
     networks:
       - db_net
+      - db_work
       - default

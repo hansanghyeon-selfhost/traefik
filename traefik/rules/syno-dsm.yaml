@@ -1,0 +1,20 @@
+################################################################
+# DSM
+# custom url: https://nas.hyeon.pro/
+################################################################
+http:
+  routers:
+    syno_2018__ds218p:
+      entryPoints:
+        - websecure
+      service: syno_2018__ds218p
+      rule: Host(`nas.hyeon.pro`)
+      tls:
+        certResolver: leresolver
+
+  services:
+    syno_2018__ds218p:
+      loadBalancer:
+        servers:
+          - url: http://192.168.1.159:5000
+        passHostHeader: true
