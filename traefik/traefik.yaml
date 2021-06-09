@@ -1,0 +1,65 @@
+################################################################
+#
+# Configuration sample for Traefik v2.
+#
+# master
+# For Traefik v2: https://github.com/traefik/traefik/blob/master/traefik.sample.yml
+# sample
+# For Traefik v1: https://github.com/traefik/traefik/blob/v1.7/traefik.sample.toml
+#
+################################################################
+
+################################################################
+# Global configuration
+################################################################
+
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: true
+
+################################################################
+# Traefik logs configuration
+################################################################
+
+log:
+  level: DEBUG
+
+################################################################
+# Access logs configuration
+################################################################
+
+accessLog:
+  filePath: /traefik.log
+  bufferingSize: 100
+  filters:
+    statusCodes: ["400-499"]
+
+################################################################
+# API and dashboard configuration
+################################################################
+
+api:
+  insecure: true
+
+################################################################
+# EntryPoints configuration
+################################################################
+
+entryPoints:
+  http:
+    address: :80
+  https:
+    address: :443
+  traefik:
+    address: :8080
+
+################################################################
+# Docker configuration backend
+################################################################
+
+providers:
+  docker:
+    exposedbydefault: false
+  file:
+    directory: /rules
+    watch: true
