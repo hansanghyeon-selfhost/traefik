@@ -2,3 +2,4 @@ letsencrypt
 .env
 cert/
 traefik/*.log
+acme.json
