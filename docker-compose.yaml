@@ -14,11 +14,8 @@ services:
   # Traefik 2 - Reverse Proxy
   traefik:
     image: traefik:v2.4
-    container_name: traefik
+    container_name: DO__traefik
     restart: unless-stopped
-    environment:
-      - CF_API_EMAIL=$CF_API_EMAIL
-      - CF_API_KEY=$CF_API_KEY
     ports:
       - target: 80
         published: 80
@@ -32,41 +29,19 @@ services:
         published: 8080
         protocol: tcp
         mode: host
-    command:
-      - "--log.level=DEBUG"
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.http.address=:80"
-      - "--entrypoints.https.address=:443"
-      - "--entrypoints.traefik.address=:8080"
-      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
-      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=http"
-      - "--certificatesresolvers.myresolver.acme.email=dandan9509@gmail.com"
-      - "--certificatesresolvers.myresolver.acme.storage=/acme/acme.json"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ${PWD}/traefik/acme:/acme
-      - ${PWD}/traefik/traefik.log:/traefik.log
-      - ${PWD}/traefik/rules:/rules
+      - ./traefik/traefik.yaml:/etc/traefik/traefik.yaml
+      - ./traefik/acme:/acme
     labels:
       - traefik.enable=true
       ## HTTP Routers
-      - traefik.http.routers.traefik-rtr.entrypoints=https
-      - traefik.http.routers.traefik-rtr.rule=Host(`traefik.$DOMAINNAME`)
-      - traefik.http.routers.traefik-rtr.tls.certresolver=myresolver
-      # ## Services - API
-      - traefik.http.routers.traefik-rtr.service=api@internal
-
-      ## HTTP-to-HTTPS Redirect
-      - traefik.http.routers.traefik-rtr-http.entrypoints=http
-      - traefik.http.routers.traefik-rtr-http.rule=HostRegexp(`{host:.+}`)
-      - traefik.http.routers.traefik-rtr-http.middlewares=redirect-to-https
-      - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
-
-      ## Middlewares
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-basic-auth@file"
+      - traefik.http.routers.202106__traefik.rule=Host(`traefik.$DOMAINNAME`)
+      - traefik.http.routers.202106__traefik.entrypoints=websecure
+      - traefik.http.routers.202106__traefik.tls.certresolver=leresolver
+      ## Service
+      - traefik.http.services.202106__traefik.loadbalancer.server.port=8080
     networks:
       - db_net
       - default

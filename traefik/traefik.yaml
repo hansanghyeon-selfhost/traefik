@@ -46,9 +46,15 @@ api:
 ################################################################
 
 entryPoints:
-  http:
+  web:
     address: :80
-  https:
+    # Redirect
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+  websecure:
     address: :443
   traefik:
     address: :8080
@@ -63,3 +69,16 @@ providers:
   file:
     directory: /rules
     watch: true
+
+################################################################
+# 인증서
+# example: https://doc.traefik.io/traefik/https/acme/
+################################################################
+
+certificatesResolvers:
+  leresolver:
+    acme:
+      email: dandan9509@gmail.com
+      storage: /acme/acme.json
+      httpChallenge:
+        entryPoint: web
