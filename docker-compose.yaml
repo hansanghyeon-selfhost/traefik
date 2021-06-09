@@ -1,10 +1,10 @@
 version: "3.8"
 
-
 ########################### NETWORKS
 networks:
   default:
     driver: bridge
+    name: traefik_proxy
   db_net:
     external:
       name: db_net
@@ -32,7 +32,7 @@ services:
         published: 8080
         protocol: tcp
         mode: host
-    command: 
+    command:
       - "--log.level=DEBUG"
       - "--api.insecure=true"
       - "--providers.docker=true"
