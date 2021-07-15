@@ -56,8 +56,6 @@ entryPoints:
           scheme: https
   websecure:
     address: :443
-  traefik:
-    address: :8080
 
 ################################################################
 # Docker configuration backend
@@ -65,11 +63,15 @@ entryPoints:
 
 providers:
   docker:
+    watch: true
+    endpoint: unix:///var/run/docker.sock
     exposedbydefault: false
+    swarmMode: true
+    network: proxy-main
+    swarmModeRefreshSeconds: 5
   file:
     directory: /rules
     watch: true
-
 ################################################################
 # 인증서
 # example: https://doc.traefik.io/traefik/https/acme/
@@ -78,7 +80,7 @@ providers:
 certificatesResolvers:
   leresolver:
     acme:
-      email: dandan9509@gmail.com
+      email: certificate@hyeon.pro
       storage: /acme/acme.json
       httpChallenge:
         entryPoint: web

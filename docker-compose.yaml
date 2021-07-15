@@ -3,14 +3,14 @@ version: "3.8"
 ########################### NETWORKS
 networks:
   default:
-    driver: bridge
+    driver: overlay
     name: traefik_proxy
-  db_net:
-    external:
-      name: db_net
-  db_work:
-    external:
-      name: db_work
+  # db_net:
+  #   external:
+  #     name: db_net
+  # db_work:
+  #   external:
+  #     name: db_work
 
 ########################### SERVICES
 services:
@@ -42,30 +42,30 @@ services:
       - traefik.enable=true
       ## HTTP Routers
       - traefik.http.routers.202106__traefik.rule=Host(`traefik.${DOMAINNAME}`)
-      - traefik.http.routers.202106__traefik.entrypoints=websecure
-      - traefik.http.routers.202106__traefik.tls.certresolver=leresolver
-      - traefik.http.routers.202106__traefik.middlewares=fauth
+      - traefik.http.routers.202106__traefik.entrypoints=web
+      # - traefik.http.routers.202106__traefik.entrypoints=websecure
+      # - traefik.http.routers.202106__traefik.tls.certresolver=leresolver
+      # - traefik.http.routers.202106__traefik.middlewares=fauth
       ## Service
       - traefik.http.services.202106__traefik.loadbalancer.server.port=8080
     networks:
-      - db_net
-      - db_work
+      # - db_net
+      # - db_work
       - default
 
-  fauth:
-    container_name: fauth
-    image: thomseddon/traefik-forward-auth:latest
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-    environment:
-      - PROVIDERS_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID} # REDACTED
-      - PROVIDERS_GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_ID} # REDACTED
-      - SECRET=$O{AUTH_SECRET}
-      - INSECURE_COOKIE=false
-      - WHITELIST=${EMAIL}
-    labels:
-      - traefik.enable=true
-      - traefik.http.middlewares.fauth.forwardauth.address=http://fauth:4181
-      - traefik.http.middlewares.fauth.forwardauth.authResponseHeaders=X-Forwarded-User
-      - traefik.http.services.fauth.loadbalancer.server.port=4181
+  # fauth:
+  #   container_name: fauth
+  #   image: thomseddon/traefik-forward-auth:latest
+  #   restart: unless-stopped
+  #   security_opt:
+  #     - no-new-privileges:true
+  #   environment:
+  #     - PROVIDERS_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID} # REDACTED
+  #     - PROVIDERS_GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_ID} # REDACTED
+  #     - SECRET=$O{AUTH_SECRET}
+  #     - INSECURE_COOKIE=false
+  #   labels:
+  #     - traefik.enable=true
+  #     - traefik.http.middlewares.fauth.forwardauth.address=http://fauth:4181
+  #     - traefik.http.middlewares.fauth.forwardauth.authResponseHeaders=X-Forwarded-User
+  #     - traefik.http.services.fauth.loadbalancer.server.port=4181
