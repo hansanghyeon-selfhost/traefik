@@ -2,3 +2,4 @@ letsencrypt
 .env
 traefik/*.log
 acme.json
+traefik/users
