@@ -1,23 +1,13 @@
 version: "3.8"
 
-########################### NETWORKS
-networks:
-  default:
-    driver: overlay
-    name: traefik_proxy
-  # db_net:
-  #   external:
-  #     name: db_net
-  # db_work:
-  #   external:
-  #     name: db_work
 
 ########################### SERVICES
 services:
   # Traefik 2 - Reverse Proxy
-  traefik:
-    image: traefik:v2.4
-    container_name: DO__traefik
+  app:
+    env_file:
+      - ./.env
+    image: traefik:v2.5.3
     restart: unless-stopped
     ports:
       - target: 80
@@ -28,33 +18,31 @@ services:
         published: 443
         protocol: tcp
         mode: host
-      - target: 8080
-        published: 8080
-        protocol: tcp
-        mode: host
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik/rules:/rules
       - ./traefik/acme:/acme
       - ./traefik/traefik.yaml:/etc/traefik/traefik.yaml
-    labels:
-      - traefik.enable=true
-      ## HTTP Routers
-      - traefik.http.routers.202106__traefik.rule=Host(`traefik.${DOMAINNAME}`)
-      - traefik.http.routers.202106__traefik.entrypoints=web
-      # - traefik.http.routers.202106__traefik.entrypoints=websecure
-      # - traefik.http.routers.202106__traefik.tls.certresolver=leresolver
-      # - traefik.http.routers.202106__traefik.middlewares=fauth
-      ## Service
-      - traefik.http.services.202106__traefik.loadbalancer.server.port=8080
+      - ./traefik/users:/etc/traefik/users
     networks:
-      # - db_net
-      # - db_work
-      - default
+      - DB_net
+      - DB_work
+      - proxy-main
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ${HOSTNAME}
+      labels:
+        - traefik.enable=true
+        ## HTTP Routers
+        - traefik.http.routers.202106__traefik.rule=Host(`traefik.${DOMAINNAME}`)
+        - traefik.http.routers.202106__traefik.entrypoints=websecure
+        - traefik.http.routers.202106__traefik.tls.certresolver=leresolver
+        ## Service
+        - traefik.http.services.202106__traefik.loadbalancer.server.port=8080
 
   # fauth:
-  #   container_name: fauth
   #   image: thomseddon/traefik-forward-auth:latest
   #   restart: unless-stopped
   #   security_opt:
@@ -64,8 +52,22 @@ services:
   #     - PROVIDERS_GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_ID} # REDACTED
   #     - SECRET=$O{AUTH_SECRET}
   #     - INSECURE_COOKIE=false
-  #   labels:
-  #     - traefik.enable=true
-  #     - traefik.http.middlewares.fauth.forwardauth.address=http://fauth:4181
-  #     - traefik.http.middlewares.fauth.forwardauth.authResponseHeaders=X-Forwarded-User
-  #     - traefik.http.services.fauth.loadbalancer.server.port=4181
+  #   deploy:
+  #     placement:
+  #       constraints:
+  #         - node.hostname == ${HOSTNAME}
+  #     labels:
+  #       - traefik.enable=true
+  #       - traefik.http.middlewares.fauth.forwardauth.address=http://fauth:4181
+  #       - traefik.http.middlewares.fauth.forwardauth.authResponseHeaders=X-Forwarded-User
+  #       - traefik.http.services.fauth.loadbalancer.server.port=4181\
+
+########################### NETWORKS
+networks:
+  proxy-main:
+    driver: overlay
+    name: proxy-main
+  DB_net:
+    external: true
+  DB_work:
+    external: true
