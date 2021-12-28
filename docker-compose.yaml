@@ -1,14 +1,11 @@
 version: "3.8"
 
-
-########################### SERVICES
 services:
   # Traefik 2 - Reverse Proxy
   app:
     env_file:
       - ./.env
     image: traefik:v2.5.3
-    restart: unless-stopped
     ports:
       - target: 80
         published: 80
@@ -41,10 +38,8 @@ services:
         - traefik.http.routers.202106__traefik.tls.certresolver=leresolver
         ## Service
         - traefik.http.services.202106__traefik.loadbalancer.server.port=8080
-
   # fauth:
   #   image: thomseddon/traefik-forward-auth:latest
-  #   restart: unless-stopped
   #   security_opt:
   #     - no-new-privileges:true
   #   environment:
@@ -62,7 +57,6 @@ services:
   #       - traefik.http.middlewares.fauth.forwardauth.authResponseHeaders=X-Forwarded-User
   #       - traefik.http.services.fauth.loadbalancer.server.port=4181\
 
-########################### NETWORKS
 networks:
   proxy-main:
     driver: overlay

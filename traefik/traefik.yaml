@@ -84,3 +84,15 @@ certificatesResolvers:
       storage: /acme/acme.json
       httpChallenge:
         entryPoint: web
+
+################################################################
+# pilot
+################################################################
+
+pilot:
+  token: "3b4bc00a-ea23-40d5-a022-885ae50e0057"
+experimental:
+  plugins:
+    plugin-blockpath:
+      moduleName: "github.com/traefik/plugin-blockpath"
+      version: "v0.2.1"
