@@ -66,9 +66,7 @@ providers:
     watch: true
     endpoint: unix:///var/run/docker.sock
     exposedbydefault: false
-    swarmMode: true
-    network: proxy-main
-    swarmModeRefreshSeconds: 5
+    network: traefik_proxy
   file:
     directory: /rules
     watch: true

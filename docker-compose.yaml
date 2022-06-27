@@ -7,14 +7,8 @@ services:
       - ./.env
     image: traefik:v2.5.3
     ports:
-      - target: 80
-        published: 80
-        protocol: tcp
-        mode: host
-      - target: 443
-        published: 443
-        protocol: tcp
-        mode: host
+      - 443:443
+      - 80:80
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -22,22 +16,14 @@ services:
       - ./traefik/acme:/acme
       - ./traefik/traefik.yaml:/etc/traefik/traefik.yaml
       - ./traefik/users:/etc/traefik/users
-    networks:
-      - DB_net
-      - DB_work
-      - proxy-main
-    deploy:
-      placement:
-        constraints:
-          - node.hostname == ${HOSTNAME}
-      labels:
-        - traefik.enable=true
-        ## HTTP Routers
-        - traefik.http.routers.202106__traefik.rule=Host(`traefik.${DOMAINNAME}`)
-        - traefik.http.routers.202106__traefik.entrypoints=websecure
-        - traefik.http.routers.202106__traefik.tls.certresolver=leresolver
-        ## Service
-        - traefik.http.services.202106__traefik.loadbalancer.server.port=8080
+    labels:
+      - traefik.enable=true
+      ## HTTP Routers
+      - traefik.http.routers.202106__traefik.rule=Host(`traefik.${DOMAINNAME}`)
+      - traefik.http.routers.202106__traefik.entrypoints=websecure
+      - traefik.http.routers.202106__traefik.tls.certresolver=leresolver
+      ## Service
+      - traefik.http.services.202106__traefik.loadbalancer.server.port=8080
   # fauth:
   #   image: thomseddon/traefik-forward-auth:latest
   #   security_opt:
@@ -58,10 +44,6 @@ services:
   #       - traefik.http.services.fauth.loadbalancer.server.port=4181\
 
 networks:
-  proxy-main:
-    driver: overlay
-    name: proxy-main
-  DB_net:
-    external: true
-  DB_work:
-    external: true
+  default:
+    external:
+      name: traefik_proxy
