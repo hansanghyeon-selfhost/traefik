@@ -5,10 +5,16 @@ services:
   app:
     env_file:
       - ./.env
-    image: traefik:v2.5.3
+    image: traefik:v2.8
     ports:
-      - 443:443
-      - 80:80
+      - target: 80
+        published: 80
+        protocol: tcp
+        mode: host
+      - target: 443
+        published: 443
+        protocol: tcp
+        mode: host
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -16,33 +22,27 @@ services:
       - ./traefik/acme:/acme
       - ./traefik/traefik.yaml:/etc/traefik/traefik.yaml
       - ./traefik/users:/etc/traefik/users
+      - ./traefik/certs:/etc/certs:ro
     labels:
       - traefik.enable=true
-      ## HTTP Routers
       - traefik.http.routers.202106__traefik.rule=Host(`traefik.${DOMAINNAME}`)
       - traefik.http.routers.202106__traefik.entrypoints=websecure
       - traefik.http.routers.202106__traefik.tls.certresolver=leresolver
-      ## Service
       - traefik.http.services.202106__traefik.loadbalancer.server.port=8080
-  # fauth:
-  #   image: thomseddon/traefik-forward-auth:latest
-  #   security_opt:
-  #     - no-new-privileges:true
-  #   environment:
-  #     - PROVIDERS_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID} # REDACTED
-  #     - PROVIDERS_GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_ID} # REDACTED
-  #     - SECRET=$O{AUTH_SECRET}
-  #     - INSECURE_COOKIE=false
-  #   deploy:
-  #     placement:
-  #       constraints:
-  #         - node.hostname == ${HOSTNAME}
-  #     labels:
-  #       - traefik.enable=true
-  #       - traefik.http.middlewares.fauth.forwardauth.address=http://fauth:4181
-  #       - traefik.http.middlewares.fauth.forwardauth.authResponseHeaders=X-Forwarded-User
-  #       - traefik.http.services.fauth.loadbalancer.server.port=4181\
-
+  fauth:
+    image: thomseddon/traefik-forward-auth:latest
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      - PROVIDERS_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID} # REDACTED
+      - PROVIDERS_GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_ID} # REDACTED
+      - SECRET=${OAUTH_SECRET}
+      - INSECURE_COOKIE=false
+    labels:
+      - traefik.enable=true
+      - traefik.http.middlewares.fauth.forwardauth.address=http://fauth:4181
+      - traefik.http.middlewares.fauth.forwardauth.authResponseHeaders=X-Forwarded-User
+      - traefik.http.services.fauth.loadbalancer.server.port=4181
 networks:
   default:
     external:
