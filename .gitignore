@@ -1,5 +1,8 @@
 letsencrypt
 .env
 traefik/*.log
-acme.json
 traefik/users
+traefik/certs/*
+!traefik/certs/.gitkeep
+traefik/acme/*
+!traefik/acme/.gitkeep
