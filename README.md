@@ -45,6 +45,9 @@ services:
       - traefik.http.services.svc__traefik.loadbalancer.server.port=8080
 ```
 
+
+## Swarm
+
 using: docker swarm
 
 다른점 deploy에서 lables를 정의함
