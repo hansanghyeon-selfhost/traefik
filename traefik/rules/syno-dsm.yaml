@@ -6,14 +6,14 @@ http:
   routers:
     syno_2018__ds218p:
       entryPoints:
-        - websecure
+        - https
       service: syno_2018__ds218p
       rule: Host(`218p.nas.hyeon.pro`)
       tls:
         certResolver: leresolver
     syno_2018__ds720p:
       entryPoints:
-        - websecure
+        - https
       service: syno_2018__ds720p
       rule: Host(`720p.nas.hyeon.pro`)
       tls:

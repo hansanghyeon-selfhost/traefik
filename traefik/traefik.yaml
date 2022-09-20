@@ -46,15 +46,15 @@ api:
 ################################################################
 
 entryPoints:
-  web:
+  http:
     address: :80
     # Redirect
     http:
       redirections:
         entryPoint:
-          to: websecure
+          to: https
           scheme: https
-  websecure:
+  https:
     address: :443
 
 ################################################################
@@ -81,7 +81,7 @@ certificatesResolvers:
       email: certificate@hyeon.pro
       storage: /acme/acme.json
       httpChallenge:
-        entryPoint: web
+        entryPoint: http
 
 ################################################################
 # pilot

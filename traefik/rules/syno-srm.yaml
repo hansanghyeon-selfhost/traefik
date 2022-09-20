@@ -7,7 +7,7 @@ http:
   routers:
     syno_srm:
       entryPoints:
-        - websecure
+        - https
       service: syno_srm
       rule: Host(`rt.nas.hyeon.pro`)
       tls:

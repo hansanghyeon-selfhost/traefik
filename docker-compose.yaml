@@ -26,7 +26,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.202106__traefik.rule=Host(`traefik.${DOMAINNAME}`)
-      - traefik.http.routers.202106__traefik.entrypoints=websecure
+      - traefik.http.routers.202106__traefik.entrypoints=https
       - traefik.http.routers.202106__traefik.tls.certresolver=leresolver
       - traefik.http.services.202106__traefik.loadbalancer.server.port=8080
   fauth:
