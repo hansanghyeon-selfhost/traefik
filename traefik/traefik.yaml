@@ -92,7 +92,7 @@ pilot:
     token: "1103ca78-8def-43c3-91f0-81b5957e71d8"
 
 ################################################################
-# plugins
+# experimental
 ################################################################
 
 experimental:
@@ -103,3 +103,16 @@ experimental:
     plugin-blockpath:
       moduleName: "github.com/traefik/plugin-blockpath"
       version: "v0.2.1"
+  hub: true
+
+################################################################
+# Traefik hub
+################################################################
+
+hub:
+  tls:
+    insecure: true
+
+metrics:
+  prometheus:
+    addRoutersLabels: true
