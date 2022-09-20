@@ -1,0 +1,9 @@
+http:
+  middlewares:
+    beeclover-global-script:
+      plugin:
+        plugin-rewritebody:
+          lastModified: "true"
+          rewrites:
+            - regex: body
+              replacement: fuck
