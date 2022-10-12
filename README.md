@@ -45,6 +45,10 @@ services:
       - traefik.http.services.svc__traefik.loadbalancer.server.port=8080
 ```
 
+## Traefik hub (experimental)
+
+여러곳에서 사용중인 traefik을 관리하기 용이해졌다.
+
 
 ## Swarm
 
