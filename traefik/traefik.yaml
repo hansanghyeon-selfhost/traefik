@@ -54,8 +54,11 @@ entryPoints:
         entryPoint:
           to: https
           scheme: https
+          permanent: true
   https:
     address: :443
+  spice:
+    address: :3128
 
 ################################################################
 # Docker configuration backend
@@ -107,6 +110,7 @@ experimental:
 
 ################################################################
 # Traefik hub
+# https://doc.traefik.io/traefik/traefik-hub/
 ################################################################
 
 hub:
