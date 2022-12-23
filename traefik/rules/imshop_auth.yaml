@@ -1,8 +1,0 @@
-################################################################
-# traefik 기본인증 미들웨어
-################################################################
-http:
-  middlewares:
-    imshop-auth:
-      basicAuth:
-        usersFile: "/etc/traefik/users/imshopUserfile"

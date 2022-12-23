@@ -1,21 +1,6 @@
 version: "3.8"
 
 services:
-  hub-agent:
-    image: ghcr.io/traefik/hub-agent-traefik:experimental
-    pull_policy: always
-    restart: "on-failure"
-    command:
-      - run
-      - --hub.token=${HUB_TOKEN}
-      - --auth-server.advertise-url=http://hub-agent
-      - --traefik.host=app
-      - --traefik.tls.insecure=true
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    depends_on:
-      - app
-  # Traefik 2 - Reverse Proxy
   app:
     env_file:
       - ./.env
@@ -43,29 +28,6 @@ services:
       - traefik.http.routers.202106__traefik.entrypoints=https
       - traefik.http.routers.202106__traefik.tls.certresolver=leresolver
       - traefik.http.services.202106__traefik.loadbalancer.server.port=8080
-  fauth:
-    image: thomseddon/traefik-forward-auth:latest
-    security_opt:
-      - no-new-privileges:true
-    environment:
-      - PROVIDERS_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID} # REDACTED
-      - PROVIDERS_GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_ID} # REDACTED
-      - SECRET=${OAUTH_SECRET}
-      - INSECURE_COOKIE=false
-    labels:
-      - traefik.enable=true
-      - traefik.http.middlewares.fauth.forwardauth.address=http://fauth:4181
-      - traefik.http.middlewares.fauth.forwardauth.authResponseHeaders=X-Forwarded-User
-      - traefik.http.services.fauth.loadbalancer.server.port=4181
-  whoami:
-    image: "traefik/whoami"
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.202106__whoami.rule=Host(`whoami.${DOMAINNAME}`)
-      - traefik.http.routers.202106__whoami.entrypoints=https
-      - traefik.http.routers.202106__whoami.tls.certresolver=leresolver
-      - traefik.http.services.202106__whoami.loadbalancer.server.port=80
-      - traefik.http.routers.202106__whoami.middlewares=beeclover-global-script@file
 networks:
   default:
     external:

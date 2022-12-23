@@ -8,14 +8,14 @@ http:
       entryPoints:
         - https
       service: syno_2018__ds218p
-      rule: Host(`218p.nas.hyeon.pro`)
+      rule: Host(`218p.cloud.hyeon.pro`)
       tls:
         certResolver: leresolver
     syno_2018__ds720p:
       entryPoints:
         - https
       service: syno_2018__ds720p
-      rule: Host(`720p.nas.hyeon.pro`)
+      rule: Host(`720p.cloud.hyeon.pro`)
       tls:
         certResolver: leresolver
 
@@ -28,5 +28,5 @@ http:
     syno_2018__ds720p:
       loadBalancer:
         servers:
-          - url: http://192.168.1.55:5000
+          - url: http://192.168.1.56:5000
         passHostHeader: true

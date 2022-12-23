@@ -5,5 +5,5 @@ http:
         plugin-rewritebody:
           lastModified: "true"
           rewrites:
-            - regex: body
-              replacement: fuck
+            - regex: "Host: whoami"
+              replacement: bar

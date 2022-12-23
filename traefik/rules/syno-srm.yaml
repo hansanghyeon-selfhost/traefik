@@ -9,7 +9,7 @@ http:
       entryPoints:
         - https
       service: syno_srm
-      rule: Host(`rt.nas.hyeon.pro`)
+      rule: Host(`rt.cloud.hyeon.pro`)
       tls:
         certResolver: leresolver
 
