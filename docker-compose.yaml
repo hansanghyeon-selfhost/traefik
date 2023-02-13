@@ -14,6 +14,7 @@ services:
         published: 443
         protocol: tcp
         mode: host
+      - 8080:8080
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -22,12 +23,6 @@ services:
       - ./traefik/traefik.yaml:/etc/traefik/traefik.yaml
       - ./traefik/users:/etc/traefik/users
       - ./traefik/certs:/etc/certs:ro
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.202106__traefik.rule=Host(`traefik.${DOMAINNAME}`)
-      - traefik.http.routers.202106__traefik.entrypoints=https
-      - traefik.http.routers.202106__traefik.tls.certresolver=leresolver
-      - traefik.http.services.202106__traefik.loadbalancer.server.port=8080
 networks:
   default:
     external:
