@@ -3,6 +3,9 @@ certs:
 	cd ./traefik/certs && mkcert -key-file localhost.pem -cert-file localhost.pem librespeed.local
 	mkcert -install
 	
+net:
+	docker network creaete traefik_proxy
+	
 synology:
 	HTTP_PORT=80
 	HTTP_PATCH_PORT=81
