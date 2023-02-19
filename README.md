@@ -1,3 +1,25 @@
+## makefile
+
+```bash
+make net
+```
+
+traefik이 사용할 traefik_proxy 네트워크를 만들어준다.
+
+```bash
+make synology
+```
+
+synology에서 80, 443 포트를 사용하고있을때 기본 포트를 변경한다.
+
+```bash
+make cert
+```
+
+let's encry를 사용하지 않고 로컬 cert 파일을 만들기
+
+## post
+
 home lab에서 traefik을 구성하면서 쓴 글
 
 https://hyeon.pro/dev/tag/traefik
