@@ -1,4 +1,0 @@
-tls:
-  certificates:
-    - certFile: "/etc/certs/localhost.pem"
-      keyFile: "/etc/certs/localhost.pem"
