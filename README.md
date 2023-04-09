@@ -104,6 +104,8 @@ providers:
 
 ## local port 맵핑하는 방법
 
+rules 폴더에 추가하면된다. `rules/test.yaml`
+
 ```yaml
 ################################################################
 # local port
