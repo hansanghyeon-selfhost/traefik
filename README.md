@@ -67,10 +67,37 @@ services:
       - traefik.http.services.svc__traefik.loadbalancer.server.port=8080
 ```
 
+## local port 맵핑하는 방법
+
+rules 폴더에 추가하면된다. `rules/test.yaml`
+
+```yaml
+################################################################
+# local port
+# custom url: https://example.local/
+################################################################
+
+http:
+  routers:
+    example:
+      entryPoints:
+        - websecure
+      service: hanaonethecar
+      rule: Host(`example.local`)
+      tls:
+        certResolver: leresolver
+
+  services:
+    example:
+      loadBalancer:
+        servers:
+          - url: http://192.168.1.34:3000
+        passHostHeader: true
+```
+
 ## Traefik hub (experimental)
 
 여러곳에서 사용중인 traefik을 관리하기 용이해졌다.
-
 
 ## Swarm
 
@@ -101,31 +128,3 @@ providers:
 ```
 
 자세한 내용은 [traefik swarm 모드 설정 | 개발자 상현에 하루하루](https://hyeon.pro/dev/traefik-swarm-mode-set/) 참고
-
-## local port 맵핑하는 방법
-
-rules 폴더에 추가하면된다. `rules/test.yaml`
-
-```yaml
-################################################################
-# local port
-# custom url: https://example.local/
-################################################################
-
-http:
-  routers:
-    example:
-      entryPoints:
-        - websecure
-      service: hanaonethecar
-      rule: Host(`example.local`)
-      tls:
-        certResolver: leresolver
-
-  services:
-    example:
-      loadBalancer:
-        servers:
-          - url: http://192.168.1.34:3000
-        passHostHeader: true
-```

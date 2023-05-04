@@ -21,6 +21,12 @@ services:
       - ./traefik/traefik.yaml:/etc/traefik/traefik.yaml
       - ./traefik/users:/etc/traefik/users
       - ./traefik/certs:/etc/certs:ro
+  status:
+    image: nginx
+    ports:
+      - 444:80
+    volumes:
+      - ./status:/usr/share/nginx/html
 networks:
   default:
     external:
