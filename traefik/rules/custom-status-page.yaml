@@ -1,0 +1,12 @@
+################################################################
+# custom status page
+# custom url: http://localhost:444
+################################################################
+
+http:
+  services:
+    custom-status-page:
+      loadBalancer:
+        servers:
+          - url: http://custom-ip
+        passHostHeader: true

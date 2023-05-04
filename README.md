@@ -95,6 +95,19 @@ http:
         passHostHeader: true
 ```
 
+## 커스텀 상태페이지
+
+```yaml
+  middlewares:
+    local-hxan-net-error:
+      errors:
+        status:
+          - "400-499"
+          - "500-599"
+        service: "custom-status-page"
+        query: "/505.html" # << 쿼리해서 가져올 페이지
+```
+
 ## Traefik hub (experimental)
 
 여러곳에서 사용중인 traefik을 관리하기 용이해졌다.
