@@ -85,38 +85,3 @@ certificatesResolvers:
       storage: /acme/acme.json
       httpChallenge:
         entryPoint: http
-
-################################################################
-# pilot
-# https://pilot.traefik.io/
-################################################################
-
-pilot:
-    token: "1103ca78-8def-43c3-91f0-81b5957e71d8"
-
-################################################################
-# experimental
-################################################################
-
-experimental:
-  plugins:
-    plugin-rewritebody:
-      moduleName: "github.com/traefik/plugin-rewritebody"
-      version: "v0.3.1"
-    plugin-blockpath:
-      moduleName: "github.com/traefik/plugin-blockpath"
-      version: "v0.2.1"
-  hub: true
-
-################################################################
-# Traefik hub
-# https://doc.traefik.io/traefik/traefik-hub/
-################################################################
-
-hub:
-  tls:
-    insecure: true
-
-metrics:
-  prometheus:
-    addRoutersLabels: true
