@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   app:
-    image: traefik:v2.9
+    image: traefik:v3.0
     ports:
       - target: 80
         published: 80
@@ -20,7 +20,6 @@ services:
       - ./traefik/acme:/acme
       - ./traefik/traefik.yaml:/etc/traefik/traefik.yaml
       - ./traefik/users:/etc/traefik/users
-      - ./traefik/certs:/etc/certs:ro
   status:
     image: nginx
     ports:

@@ -46,19 +46,10 @@ api:
 ################################################################
 
 entryPoints:
-  http:
+  web:
     address: :80
-    # Redirect
-    http:
-      redirections:
-        entryPoint:
-          to: https
-          scheme: https
-          permanent: true
-  https:
+  webs:
     address: :443
-  spice:
-    address: :3128
 
 ################################################################
 # Docker configuration backend
@@ -86,4 +77,4 @@ certificatesResolvers:
       email: certificate@hackmail.pro
       storage: /acme/acme.json
       httpChallenge:
-        entryPoint: http
+        entryPoint: webs

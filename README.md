@@ -1,70 +1,47 @@
-## makefile
+# traefik
 
 ```bash
-make net
+make init
+make start
 ```
 
-traefik이 사용할 traefik_proxy 네트워크를 만들어준다.
-
-```bash
-make synology
-```
-
-synology에서 80, 443 포트를 사용하고있을때 기본 포트를 변경한다.
-
-```bash
-make cert
-```
-
-let's encry를 사용하지 않고 로컬 cert 파일을 만들기
-
-## post
-
-home lab에서 traefik을 구성하면서 쓴 글
-
-https://hyeon.pro/dev/tag/traefik
-
-using: docker compose
-
-가장 기본적으로 사용하는 docker-compose
+## 적용하기
 
 ```yaml
-version: "3.8"
-
-########################### SERVICES
-services:
-  traefik:
-    image: traefik:v2.4
-    container_name: DO__traefik
-    restart: unless-stopped
-    ports:
-      - target: 80
-        published: 80
-        protocol: tcp
-        mode: host
-      - target: 443
-        published: 443
-        protocol: tcp
-        mode: host
-      - target: 8080
-        published: 8080
-        protocol: tcp
-        mode: host
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./traefik/rules:/rules
-      - ./traefik/acme:/acme
-      - ./traefik/traefik.yaml:/etc/traefik/traefik.yaml
     labels:
       - traefik.enable=true
       ## HTTP Routers
-      - traefik.http.routers.svc__traefik.rule=Host(`traefik.${DOMAINNAME}`)
-      - traefik.http.routers.svc__traefik.entrypoints=web
-      # - traefik.http.routers.svc__traefik.entrypoints=websecure
-      # - traefik.http.routers.svc__traefik.tls.certresolver=leresolver
-      ## Service
-      - traefik.http.services.svc__traefik.loadbalancer.server.port=8080
+      - traefik.http.routers.${SERVICE}.entrypoints=webs
+      - traefik.http.routers.${SERVICE}.rule=Host(`${DOMAIN}`)
+      - traefik.http.services.${SERVICE}.loadbalancer.server.port=3000
+      - traefik.http.routers.${SERVICE}.tls.certresolver=leresolver
+```
+
+## http redirect https
+
+설정에 기본값으로 http를 https로 리다이렉트하는 설정을 추가했는데. 제거하였다.
+
+```diff
+ entryPoints:
+   http:
+     address: :80
+-    # Redirect
+-    http:
+-      redirections:
+-        entryPoint:
+-          to: https
+-          scheme: https
+-          permanent: true
+   https:
+     address: :443
+```
+
+docker-compose label로 설정하는 방법
+
+```yaml
+    labels:
+      - traefik.http.middlewares.${SERVICE}.redirectscheme.scheme=https
+      - traefik.http.middlewares.${SERVICE}.redirectscheme.permanent=true
 ```
 
 ## local port 맵핑하는 방법
@@ -97,6 +74,8 @@ http:
 
 ## 커스텀 상태페이지
 
+docker-compose 구성에 nginx를 추가해서 nginx에서 커스텀 상태페이지를 추가할 수 있다.
+
 ```yaml
   middlewares:
     local-hxan-net-error:
@@ -108,9 +87,6 @@ http:
         query: "/505.html" # << 쿼리해서 가져올 페이지
 ```
 
-## Traefik hub (experimental)
-
-여러곳에서 사용중인 traefik을 관리하기 용이해졌다.
 
 ## Swarm
 
@@ -140,4 +116,18 @@ providers:
     swarmModeRefreshSeconds: 5
 ```
 
-자세한 내용은 [traefik swarm 모드 설정 | 개발자 상현에 하루하루](https://hyeon.pro/dev/traefik-swarm-mode-set/) 참고
+## synology
+
+synology 내부에서 사용한다하면 기본적으로 nginx 또는 apache때문에 80, 443포트를 사용하지 못해서 `docker-compose up` 할 수 없다.
+
+```sh
+sed -i "s/\( *listen .*\)81/\180/" /usr/syno/share/nginx/*.mustache
+sed -i "s/\( *listen .*\)80/\181/" /usr/syno/share/nginx/*.mustache
+sed -i "s/\( *listen .*\)444/\1443/" /usr/syno/share/nginx/*.mustache
+sed -i "s/\( *listen .*\)443/\1444/" /usr/syno/share/nginx/*.mustache
+```
+
+이런식으로 바꿔주자.
+
+- 80 -> 81
+- 443 -> 444
