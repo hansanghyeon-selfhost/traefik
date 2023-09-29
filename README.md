@@ -39,7 +39,6 @@ make start
 docker-compose label로 설정하는 방법
 
 ```yaml
-    labels:
       - traefik.http.middlewares.${SERVICE}.redirectscheme.scheme=https
       - traefik.http.middlewares.${SERVICE}.redirectscheme.permanent=true
 ```
