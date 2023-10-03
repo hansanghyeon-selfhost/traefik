@@ -29,7 +29,7 @@ make start
 +    http:
 +      redirections:
 +        entryPoint:
-+          to: https
++          to: webs
 +          scheme: https
 +          permanent: true
    webs:
