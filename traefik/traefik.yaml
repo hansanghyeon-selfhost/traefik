@@ -48,6 +48,13 @@ api:
 entryPoints:
   web:
     address: :80
+    # Redirect
+    http:
+      redirections:
+        entryPoint:
+          to: https
+          scheme: https
+          permanent: true
   webs:
     address: :443
 
@@ -77,4 +84,4 @@ certificatesResolvers:
       email: certificate@hackmail.pro
       storage: /acme/acme.json
       httpChallenge:
-        entryPoint: webs
+        entryPoint: web

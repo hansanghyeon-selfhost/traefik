@@ -19,26 +19,27 @@ make start
 
 ## http redirect https
 
-설정에 기본값으로 http를 https로 리다이렉트하는 설정을 추가했는데. 제거하였다.
+설정에 기본값으로 http를 https로 리다이렉트하도록 설정
 
 ```diff
  entryPoints:
-   http:
+   web:
      address: :80
--    # Redirect
--    http:
--      redirections:
--        entryPoint:
--          to: https
--          scheme: https
--          permanent: true
-   https:
++    # Redirect
++    http:
++      redirections:
++        entryPoint:
++          to: https
++          scheme: https
++          permanent: true
+   webs:
      address: :443
 ```
 
 docker-compose label로 설정하는 방법
 
 ```yaml
+    labels:
       - traefik.http.middlewares.${SERVICE}.redirectscheme.scheme=https
       - traefik.http.middlewares.${SERVICE}.redirectscheme.permanent=true
 ```
@@ -57,7 +58,7 @@ http:
   routers:
     example:
       entryPoints:
-        - websecure
+        - webs
       service: hanaonethecar
       rule: Host(`example.local`)
       tls:
