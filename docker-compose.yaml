@@ -1,4 +1,9 @@
-version: "3.8"
+version: "3.9"
+
+networks:
+  default:
+    name: traefik_proxy
+    external: true
 
 services:
   app:
@@ -26,7 +31,3 @@ services:
       - 444:80
     volumes:
       - ./status:/usr/share/nginx/html
-networks:
-  default:
-    external:
-      name: traefik_proxy
