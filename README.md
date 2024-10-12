@@ -7,6 +7,8 @@ make start
 
 ## 적용하기
 
+`traefik.yaml` 수정
+
 ```yaml
     labels:
       - traefik.enable=true
