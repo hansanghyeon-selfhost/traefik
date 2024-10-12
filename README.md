@@ -25,23 +25,42 @@ make start
  entryPoints:
    web:
      address: :80
-+    # Redirect
-+    http:
-+      redirections:
-+        entryPoint:
-+          to: webs
-+          scheme: https
-+          permanent: true
+-    # Redirect
+-    http:
+-      redirections:
+-        entryPoint:
+-          to: webs
+-          scheme: https
+-          permanent: true
    webs:
      address: :443
 ```
 
-docker-compose label로 설정하는 방법
+`traefik/rules/http2https.yaml` 생성
 
 ```yaml
-    labels:
-      - traefik.http.middlewares.${SERVICE}.redirectscheme.scheme=https
-      - traefik.http.middlewares.${SERVICE}.redirectscheme.permanent=true
+http:
+  middlewares:
+    http2https:
+      redirectScheme:
+        scheme: https
+        permanent: true
+```
+
+http로 오면 https로 리다이렉트되는 미들웨어 적용하기.
+
+```
+  labels:
+      - traefik.enable=true
+      ## HTTP Routers
+      - traefik.http.routers.${SERVICE}-http.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.${SERVICE}-http.entrypoints=web
+      - traefik.http.routers.${SERVICE}-http.middlewares=http2https
+      ## HTTPS Routers
+      - traefik.http.routers.${SERVICE}.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.${SERVICE}.entrypoints=webs
+      - traefik.http.routers.${SERVICE}.tls.certresolver=leresolver
+      - traefik.http.services.${SERVICE}.loadbalancer.server.port=
 ```
 
 ## local port 맵핑하는 방법
