@@ -1,0 +1,7 @@
+services:
+  status:
+    image: nginx
+    ports:
+      - 444:80
+    volumes:
+      - ./status:/usr/share/nginx/html
