@@ -19,7 +19,9 @@ make start
       - traefik.http.routers.${SERVICE}.tls.certresolver=leresolver
 ```
 
-## http redirect https
+## advance
+
+### http redirect https
 
 설정에 기본값으로 http를 https로 리다이렉트하도록 설정
 
@@ -54,18 +56,34 @@ http로 오면 https로 리다이렉트되는 미들웨어 적용하기.
 ```yaml
   labels:
       - traefik.enable=true
-      ## HTTP Routers
-      - traefik.http.routers.${SERVICE}-http.rule=Host(`${DOMAIN}`)
-      - traefik.http.routers.${SERVICE}-http.entrypoints=web
-      - traefik.http.routers.${SERVICE}-http.middlewares=http2https
-      ## HTTPS Routers
       - traefik.http.routers.${SERVICE}.rule=Host(`${DOMAIN}`)
       - traefik.http.routers.${SERVICE}.entrypoints=webs
       - traefik.http.routers.${SERVICE}.tls.certresolver=leresolver
-      - traefik.http.services.${SERVICE}.loadbalancer.server.port=
+      - traefik.http.services.${SERVICE}.loadbalancer.server.port=${APP_PORT}
+      - traefik.http.routers.${SERVICE}.middlewares=http2https
 ```
 
-## local port 맵핑하는 방법
+### multiple domain
+
+```
+  labels:
+      - traefik.enable=true
+      # A DOMAIN
+      - traefik.http.routers.${SERVICE}-A.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.${SERVICE}-A.entrypoints=webs
+      - traefik.http.routers.${SERVICE}-A.tls.certresolver=leresolver
+      - traefik.http.routers.${SERVICE}-A.service=${SERVICE}-A
+      - traefik.http.services.${SERVICE}-A.loadbalancer.server.port=${APP_PORT}
+      # B DOMAIN
+      - traefik.http.routers.${SERVICE}-B.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.${SERVICE}-B.entrypoints=webs
+      - traefik.http.routers.${SERVICE}-B.tls.certresolver=leresolver
+      - traefik.http.routers.${SERVICE}-B.service=${SERVICE}-B
+      - traefik.http.services.${SERVICE}-B.loadbalancer.server.port=${APP_PORT}
+```
+
+
+### local port 맵핑하는 방법
 
 rules 폴더에 추가하면된다. `rules/test.yaml`
 
@@ -93,7 +111,7 @@ http:
         passHostHeader: true
 ```
 
-## 커스텀 상태페이지
+### 커스텀 상태페이지
 
 docker-compose 구성에 nginx를 추가해서 nginx에서 커스텀 상태페이지를 추가할 수 있다.
 
@@ -109,7 +127,7 @@ docker-compose 구성에 nginx를 추가해서 nginx에서 커스텀 상태페�
 ```
 
 
-## Swarm
+### Swarm
 
 using: docker swarm
 
@@ -137,7 +155,7 @@ providers:
     swarmModeRefreshSeconds: 5
 ```
 
-## synology
+### synology
 
 synology 내부에서 사용한다하면 기본적으로 nginx 또는 apache때문에 80, 443포트를 사용하지 못해서 `docker-compose up` 할 수 없다.
 
