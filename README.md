@@ -65,7 +65,7 @@ http로 오면 https로 리다이렉트되는 미들웨어 적용하기.
 
 ### multiple domain
 
-```
+```yaml
   labels:
       - traefik.enable=true
       # A DOMAIN
