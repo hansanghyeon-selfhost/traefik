@@ -19,7 +19,7 @@ make start
       - traefik.http.routers.${SERVICE}.tls.certresolver=leresolver
 ```
 
-## advance
+## 레시피
 
 ### http redirect https
 
@@ -61,6 +61,32 @@ http로 오면 https로 리다이렉트되는 미들웨어 적용하기.
       - traefik.http.routers.${SERVICE}.tls.certresolver=leresolver
       - traefik.http.services.${SERVICE}.loadbalancer.server.port=${APP_PORT}
       - traefik.http.routers.${SERVICE}.middlewares=http2https
+```
+
+```yaml
+networks:
+  traefik_proxy:
+    external: true
+
+services:
+  __CHANGE_ME__:
+    networks:
+      - default
+      - traefik_proxy
+    labels:
+      - traefik.enable=true
+      # HTTP Routers
+      - traefik.http.routers.${SERVICE}_.entrypoints=web
+      - traefik.http.routers.${SERVICE}_.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.${SERVICE}_.service=${SERVICE}_
+      - traefik.http.services.${SERVICE}_.loadbalancer.server.port=${APP_PORT}
+      - traefik.http.routers.${SERVICE}_.middlewares=http2https@file
+      ## HTTPS Routers
+      - traefik.http.routers.${SERVICE}.entrypoints=webs
+      - traefik.http.routers.${SERVICE}.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.${SERVICE}.tls.certresolver=leresolver
+      - traefik.http.routers.${SERVICE}.service=${SERVICE}
+      - traefik.http.services.${SERVICE}.loadbalancer.server.port=${APP_PORT}
 ```
 
 ### multiple domain
