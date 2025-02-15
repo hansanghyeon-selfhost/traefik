@@ -57,6 +57,15 @@ entryPoints:
           permanent: true
   webs:
     address: :443
+    http:
+      tls:
+        certResolver: leresolver
+  internal:
+    address: :30080
+  internals:
+    address: :30443
+    http:
+      tls: true
 
 ################################################################
 # Docker configuration backend
@@ -66,8 +75,9 @@ providers:
   docker:
     watch: true
     endpoint: unix:///var/run/docker.sock
-    # Property exposedbydefault is not allowed.yaml-schema: Traefik v2
-    # exposedbydefault: false
+    # docker.sock을 확인하다보니까 모든 container가 traefik dashboard에서 확인이 가능하다.
+    # traefik.enabled 라벨이없으면 traefik dashboard에 노출되지 않도록하는 옵션
+    exposedByDefault: false
     network: traefik_proxy
   file:
     directory: /rules
@@ -81,7 +91,7 @@ providers:
 certificatesResolvers:
   leresolver:
     acme:
-      email: certificate@hackmail.pro
+      email: certificate@hyeon.pro
       storage: /acme/acme.json
       httpChallenge:
         entryPoint: web
