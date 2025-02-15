@@ -1,7 +1,38 @@
+
 services:
+  app:
+    ports:
+      # internal, internals의 entrypoint 노출
+      - 30080:30080
+      - 30443:30443
+    labels:
+      - namespace=infra
+      # traefik
+      - traefik.enable=true
+      - traefik.http.routers.$SERVICE.entrypoints=internal,internals
+      - traefik.http.routers.${SERVICE}.rule=Host(`${DOMAIN_INTERNAL}`)
+      - traefik.http.routers.${SERVICE}.service=${SERVICE}
+      - traefik.http.services.${SERVICE}.loadbalancer.server.port=${APP_PORT}
+    volumes:
+      - ./_v/traefik/acme:/acme
+      - ./_v/traefik/users:/etc/traefik/users
+      - ./_v/traefik/cert:/cert
+      - ./_v/traefik/logs:/logs
+
   status:
     image: nginx
     ports:
       - 444:80
     volumes:
       - ./status:/usr/share/nginx/html
+
+  whoami:
+    image: traefik/whoami
+    restart: unless-stopped
+    labels:
+      # traefik
+      - traefik.enable=true
+      - traefik.http.routers.${SERVICE}-whoami.entrypoints=webs
+      - traefik.http.routers.${SERVICE}-whoami.rule=Host(`whoami.hyeon.pro`)
+      - traefik.http.routers.${SERVICE}-whoami.service=${SERVICE}-whoami
+      - traefik.http.services.${SERVICE}-whoami.loadbalancer.server.port=80

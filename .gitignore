@@ -6,3 +6,7 @@ traefik/certs/*
 !traefik/certs/.gitkeep
 traefik/acme/*
 !traefik/acme/.gitkeep
+
+.justfile*
+traefik/cert
+_v

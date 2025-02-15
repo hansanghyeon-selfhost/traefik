@@ -12,13 +12,24 @@ make start
 `traefik.yaml` 수정
 
 ```yaml
+networks:
+  traefik_proxy:
+    external: true
+
+services:
+  __CHANGE_ME__:
+    networks:
+      - default
+      - traefik_proxy
     labels:
+      # traefik
       - traefik.enable=true
-      ## HTTP Routers
-      - traefik.http.routers.${SERVICE}.entrypoints=webs
+      - traefik.http.routers.${SERVICE}.entrypoints=web,webs
       - traefik.http.routers.${SERVICE}.rule=Host(`${DOMAIN}`)
-      - traefik.http.services.${SERVICE}.loadbalancer.server.port=3000
-      - traefik.http.routers.${SERVICE}.tls.certresolver=leresolver
+      - traefik.http.services.${SERVICE}.loadbalancer.server.port=${APP_PORT}
+      # - traefik.http.routers.${SERVICE}.service=${SERVICE}
+      # - traefik.http.routers.${SERVICE}.middlewares=http2https@file
+      # - traefik.http.routers.${SERVICE}.tls.certresolver=leresolver
 ```
 
 ## 레시피
@@ -53,44 +64,6 @@ http:
         permanent: true
 ```
 
-http로 오면 https로 리다이렉트되는 미들웨어 적용하기.
-
-```yaml
-  labels:
-      - traefik.enable=true
-      - traefik.http.routers.${SERVICE}.rule=Host(`${DOMAIN}`)
-      - traefik.http.routers.${SERVICE}.entrypoints=webs
-      - traefik.http.routers.${SERVICE}.tls.certresolver=leresolver
-      - traefik.http.services.${SERVICE}.loadbalancer.server.port=${APP_PORT}
-      - traefik.http.routers.${SERVICE}.middlewares=http2https
-```
-
-```yaml
-networks:
-  traefik_proxy:
-    external: true
-
-services:
-  __CHANGE_ME__:
-    networks:
-      - default
-      - traefik_proxy
-    labels:
-      - traefik.enable=true
-      # HTTP Routers
-      - traefik.http.routers.${SERVICE}_.entrypoints=web
-      - traefik.http.routers.${SERVICE}_.rule=Host(`${DOMAIN}`)
-      - traefik.http.routers.${SERVICE}_.service=${SERVICE}_
-      - traefik.http.services.${SERVICE}_.loadbalancer.server.port=${APP_PORT}
-      - traefik.http.routers.${SERVICE}_.middlewares=http2https@file
-      ## HTTPS Routers
-      - traefik.http.routers.${SERVICE}.entrypoints=webs
-      - traefik.http.routers.${SERVICE}.rule=Host(`${DOMAIN}`)
-      - traefik.http.routers.${SERVICE}.tls.certresolver=leresolver
-      - traefik.http.routers.${SERVICE}.service=${SERVICE}
-      - traefik.http.services.${SERVICE}.loadbalancer.server.port=${APP_PORT}
-```
-
 ### multiple domain
 
 ```yaml
@@ -99,13 +72,11 @@ services:
       # A DOMAIN
       - traefik.http.routers.${SERVICE}-A.rule=Host(`${DOMAIN}`)
       - traefik.http.routers.${SERVICE}-A.entrypoints=webs
-      - traefik.http.routers.${SERVICE}-A.tls.certresolver=leresolver
       - traefik.http.routers.${SERVICE}-A.service=${SERVICE}-A
       - traefik.http.services.${SERVICE}-A.loadbalancer.server.port=${APP_PORT}
       # B DOMAIN
       - traefik.http.routers.${SERVICE}-B.rule=Host(`${DOMAIN}`)
       - traefik.http.routers.${SERVICE}-B.entrypoints=webs
-      - traefik.http.routers.${SERVICE}-B.tls.certresolver=leresolver
       - traefik.http.routers.${SERVICE}-B.service=${SERVICE}-B
       - traefik.http.services.${SERVICE}-B.loadbalancer.server.port=${APP_PORT}
 ```
@@ -128,8 +99,6 @@ http:
         - webs
       service: hanaonethecar
       rule: Host(`example.local`)
-      tls:
-        certResolver: leresolver
 
   services:
     example:
@@ -163,9 +132,9 @@ using: docker swarm
 
 ```yaml
 networks:
-  proxy-main:
+  traefik_proxy:
     driver: overlay
-    name: proxy-main
+    name: traefik_proxy
 ```
 
 위 처럼 docker-compose의 기본 네트워크를 `overlay`로 구성해줘야한다 (require)
@@ -177,9 +146,10 @@ providers:
   docker:
     watch: true
     endpoint: unix:///var/run/docker.sock
-    exposedbydefault: false
+    exposedByDefault: false
+    network: traefik_proxy
+    # swarm 모드 추가
     swarmMode: true
-    network: proxy-main
     swarmModeRefreshSeconds: 5
 ```
 
