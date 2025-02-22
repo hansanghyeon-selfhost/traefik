@@ -1,4 +1,6 @@
 tls:
-  certificates:
-    - certFile: "/cert/fullchain.pem"
-      keyFile: "/cert/privkey.pem"
+  stores:
+    default:
+      defaultCertificate:
+        certFile: "/cert/fullchain.pem"
+        keyFile: "/cert/privkey.pem"
