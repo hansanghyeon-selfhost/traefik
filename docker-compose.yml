@@ -15,3 +15,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik/rules:/rules
       - ./traefik/traefik.yaml:/etc/traefik/traefik.yaml
+    # rules에서 host.docker.internal을 사용하기 위해서 추가
+    # 왜? host.docker.internal을 쓰냐면 해당 worker 노드가 다른 노드로 변경될 수 있기 때문에 모든 설정은 데몬에서 받아와서 사용할수있도록
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
