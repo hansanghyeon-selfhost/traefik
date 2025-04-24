@@ -60,12 +60,33 @@ entryPoints:
     http:
       tls:
         certResolver: leresolver
+
+  # internal
+  # 리다이렉트가능한 entrypoint
+  reinternal:
+    address: :32080
+    # Redirect
+    http:
+      redirections:
+        entryPoint:
+          # 여기서 webs로 리다이렉트하는 이유는 gateway에서 80, 443 포트를 받아서 내부에서 호스트명으로 어떤 클러스터를 사용할것인지 설정하기 때문이다.
+          # 그래서 http로 와도 https로 리다이렉트하고 https는 gateway에서 reinternals 포트로 트래픽을 전달해준다.
+          to: webs
+          scheme: https
+          permanent: true
+  reinternals:
+    address: :32443
+    http:
+      tls:
+        options: default
+  # 리다이렉트 없는 entrypoint
   internal:
     address: :30080
   internals:
     address: :30443
     http:
-      tls: true
+      tls:
+        options: default
 
 ################################################################
 # Docker configuration backend

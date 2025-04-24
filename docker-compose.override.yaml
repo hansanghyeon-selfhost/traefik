@@ -1,15 +1,17 @@
-
 services:
   app:
     ports:
+      - 8080:8080
       # internal, internals의 entrypoint 노출
       - 30080:30080
       - 30443:30443
+      # reinternal, reinternals의 entrypoint 노출
+      - 32080:32080
+      - 32443:32443
     labels:
-      - namespace=infra
       # traefik
       - traefik.enable=true
-      - traefik.http.routers.$SERVICE.entrypoints=internal,internals
+      - traefik.http.routers.$SERVICE.entrypoints=reinternals
       - traefik.http.routers.${SERVICE}.rule=Host(`${DOMAIN_INTERNAL}`)
       - traefik.http.routers.${SERVICE}.service=${SERVICE}
       - traefik.http.services.${SERVICE}.loadbalancer.server.port=${APP_PORT}
@@ -19,20 +21,18 @@ services:
       - ./_v/traefik/cert:/cert
       - ./_v/traefik/logs:/logs
 
-  status:
-    image: nginx
-    ports:
-      - 444:80
-    volumes:
-      - ./status:/usr/share/nginx/html
-
+---
+services:
   whoami:
-    image: traefik/whoami
-    restart: unless-stopped
+    image: containous/whoami
     labels:
-      # traefik
       - traefik.enable=true
-      - traefik.http.routers.${SERVICE}-whoami.entrypoints=webs
-      - traefik.http.routers.${SERVICE}-whoami.rule=Host(`whoami.hyeon.pro`)
-      - traefik.http.routers.${SERVICE}-whoami.service=${SERVICE}-whoami
-      - traefik.http.services.${SERVICE}-whoami.loadbalancer.server.port=80
+      - traefik.http.routers.whoami.entrypoints=reinternals
+      - traefik.http.routers.whoami.rule=PathPrefix(`/`)
+      - traefik.http.routers.whoami.priority=1
+      - traefik.http.services.whoami.loadbalancer.server.port=80
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - WHOAMI_HOSTNAME_AND_IP=true
+    restart: unless-stopped

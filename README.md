@@ -168,3 +168,10 @@ sed -i "s/\( *listen .*\)443/\1444/" /usr/syno/share/nginx/*.mustache
 
 - 80 -> 81
 - 443 -> 444
+
+## internal, reinternal 진입점추가
+
+- internal - https로 리다이렉트가 자동적으로 이루어지지 않은 internal 진입점이다.
+- reinternal - https로 리다리렉트가 자동적으러 이루어지는 internal 진입점이다.
+
+reinternal 진입점을 제일 많이사용하고 internal 도메인의 경우 404페이지에서 디버깅을 할 수 있도록 whoami를 에러페이지로 표시하도록 설정하였다.

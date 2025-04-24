@@ -10,3 +10,6 @@ traefik/acme/*
 .justfile*
 traefik/cert
 _v
+
+traefik/rules/*
+01-dockge
