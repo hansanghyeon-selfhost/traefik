@@ -38,6 +38,12 @@ services:
       - traefik.http.routers.whoami-internal.rule=PathPrefix(`/`)
       - traefik.http.routers.whoami-internal.priority=1
       - traefik.http.routers.whoami-internal.service=whoami
+      # public 도메인 노출
+      - traefik.http.routers.whoami-public.entrypoints=webs
+      - traefik.http.routers.whoami-public.rule=Host(`whoami.hyeon.pro`)
+      - traefik.http.routers.whoami-public.priority=10
+      - traefik.http.routers.whoami-public.service=whoami
+      - traefik.http.routers.whoami-public.tls.certresolver=leresolver
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
