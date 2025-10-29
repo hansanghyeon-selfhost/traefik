@@ -67,7 +67,6 @@ entryPoints:
   webs:
     address: :443
     proxyProtocol:
-      enabled: true
       trustedIPs:
         - 192.168.10.0/24
     transport:
