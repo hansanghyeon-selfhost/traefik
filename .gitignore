@@ -13,3 +13,5 @@ _v
 
 traefik/rules/*
 01-dockge
+AGENTS.md
+CLAUDE.md
