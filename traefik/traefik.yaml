@@ -28,11 +28,17 @@ log:
 # Access logs configuration
 ################################################################
 
-accessLog:
-  filePath: /traefik.log
-  bufferingSize: 100
-  filters:
-    statusCodes: ["400-499"]
+# accessLog:
+#   filePath: /logs/traefik.log
+#   bufferingSize: 100
+#   format: json
+#   fields:
+#     headers:
+#       defaultMode: keep
+#   # 디버깅이 끝나면 다시 좁혀 주세요
+#   filters:
+#     statusCodes: ["400-599"]
+
 
 ################################################################
 # API and dashboard configuration
@@ -57,6 +63,11 @@ entryPoints:
           permanent: true
   webs:
     address: :443
+    transport:
+      respondingTimeouts:
+        readTimeout: "1h"
+        writeTimeout: "1h"
+        idleTimeout: "1h"
     http:
       tls:
         certResolver: leresolver
@@ -116,3 +127,13 @@ certificatesResolvers:
       storage: /acme/acme.json
       httpChallenge:
         entryPoint: web
+
+################################################################
+# 리버스 프록시 타임아웃/업로드 제한 늘리기
+################################################################
+
+serversTransport:
+  forwardingTimeouts:
+    dialTimeout: "30s"
+    responseHeaderTimeout: "1h"
+    idleConnTimeout: "1h"
