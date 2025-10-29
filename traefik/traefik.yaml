@@ -54,6 +54,9 @@ api:
 entryPoints:
   web:
     address: :80
+    forwardedHeaders:
+      trustedIPs:
+        - 192.168.10.0/24
     # Redirect
     http:
       redirections:
@@ -63,6 +66,10 @@ entryPoints:
           permanent: true
   webs:
     address: :443
+    proxyProtocol:
+      enabled: true
+      trustedIPs:
+        - 192.168.10.0/24
     transport:
       respondingTimeouts:
         readTimeout: "1h"
