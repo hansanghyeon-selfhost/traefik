@@ -82,6 +82,9 @@ entryPoints:
   # 리다이렉트가능한 entrypoint
   reinternal:
     address: :32080
+    forwardedHeaders:
+      trustedIPs:
+        - 192.168.10.0/24
     # Redirect
     http:
       redirections:
@@ -93,14 +96,23 @@ entryPoints:
           permanent: true
   reinternals:
     address: :32443
+    proxyProtocol:
+      trustedIPs:
+        - 192.168.10.0/24
     http:
       tls:
         options: default
   # 리다이렉트 없는 entrypoint
   internal:
     address: :30080
+    forwardedHeaders:
+      trustedIPs:
+        - 192.168.10.0/24
   internals:
     address: :30443
+    proxyProtocol:
+      trustedIPs:
+        - 192.168.10.0/24
     http:
       tls:
         options: default
