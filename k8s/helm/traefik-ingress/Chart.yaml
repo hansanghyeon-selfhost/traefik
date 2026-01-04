@@ -1,0 +1,9 @@
+apiVersion: v2
+name: traefik-ingress
+version: 0.1.0
+description: Traefik Ingress Controller (k3s) - 기존 docker-compose 설정 마이그레이션 래퍼 차트
+type: application
+dependencies:
+  - name: traefik
+    version: 38.0.1
+    repository: https://traefik.github.io/charts

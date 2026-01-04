@@ -1,0 +1,13 @@
+
+http:
+  routers:
+    syno720p:
+      entryPoints:
+        - websecure
+      service: syno720p
+      rule: Host(`720p.hyeon.pro`)
+  services:
+    syno720p:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.10.58:5000"

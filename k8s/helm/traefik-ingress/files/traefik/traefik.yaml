@@ -1,0 +1,100 @@
+################################################################
+#
+# Traefik 정적 설정(k3s/쿠버네티스용)
+#
+# - 기존 docker-compose 설정을 최대한 유지하되, providers는 Kubernetes 기반으로 전환한다.
+# - 동적 라우팅은 ConfigMap으로 주입되는 `/rules/*.yaml`(file provider) 기반을 유지한다.
+#
+################################################################
+
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: true
+
+log:
+  level: DEBUG
+
+api:
+  # 운영에서는 노출 경로를 제한하는 것을 권장한다(예: 내부 전용, 인증 미들웨어 적용).
+  insecure: true
+
+entryPoints:
+  web:
+    address: :80
+    forwardedHeaders:
+      trustedIPs:
+        - 192.168.10.0/24
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
+  websecure:
+    address: :443
+    proxyProtocol:
+      trustedIPs:
+        - 192.168.10.0/24
+    transport:
+      respondingTimeouts:
+        readTimeout: "1h"
+        writeTimeout: "1h"
+        idleTimeout: "1h"
+    http:
+      tls:
+        certResolver: leresolver
+
+  # internal (기존과 동일)
+  reinternal:
+    address: :32080
+    forwardedHeaders:
+      trustedIPs:
+        - 192.168.10.0/24
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
+  reinternals:
+    address: :32443
+    proxyProtocol:
+      trustedIPs:
+        - 192.168.10.0/24
+    http:
+      tls:
+        options: default
+  internal:
+    address: :30080
+    forwardedHeaders:
+      trustedIPs:
+        - 192.168.10.0/24
+  internals:
+    address: :30443
+    proxyProtocol:
+      trustedIPs:
+        - 192.168.10.0/24
+    http:
+      tls:
+        options: default
+
+providers:
+  kubernetesCRD: {}
+  kubernetesIngress: {}
+  file:
+    directory: /rules
+    watch: true
+
+certificatesResolvers:
+  leresolver:
+    acme:
+      email: certificate@hyeon.pro
+      storage: /acme/acme.json
+      httpChallenge:
+        entryPoint: web
+
+serversTransport:
+  forwardingTimeouts:
+    dialTimeout: "30s"
+    responseHeaderTimeout: "1h"
+    idleConnTimeout: "1h"

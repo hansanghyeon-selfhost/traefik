@@ -1,0 +1,12 @@
+http:
+  routers:
+    sync:
+      entryPoints:
+        - reinternals
+      service: sync
+      rule: Host(`im.sync`)
+  services:
+    sync:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.10.58:8384"

@@ -1,0 +1,97 @@
+traefik:
+  image:
+    # 기존 docker-compose와 동일한 버전 고정(필요 시 상향)
+    tag: v3.5.0
+
+  # 80/443 바인딩을 위해 NET_BIND_SERVICE 권한이 필요
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+      add:
+        - NET_BIND_SERVICE
+    readOnlyRootFilesystem: true
+
+  # k3s: control-plane은 스케줄 금지(taint) 전제 → 워커에만 뜨도록 DaemonSet 사용
+  deployment:
+    kind: DaemonSet
+    dnsPolicy: ClusterFirstWithHostNet
+    initContainers:
+      - name: init-acme
+        image: busybox:1.36
+        command:
+          - sh
+          - -c
+          - >-
+            mkdir -p /acme &&
+            touch /acme/acme.json &&
+            chmod 600 /acme/acme.json
+        volumeMounts:
+          - name: traefik-acme
+            mountPath: /acme
+    additionalVolumes:
+      - name: traefik-acme
+        hostPath:
+          path: /workspace/hansanghyeon-selfhost/traefik/_v/traefik/acme
+          type: DirectoryOrCreate
+      - name: traefik-logs
+        hostPath:
+          path: /workspace/hansanghyeon-selfhost/traefik/_v/traefik/logs
+          type: DirectoryOrCreate
+      - name: traefik-users
+        hostPath:
+          path: /workspace/hansanghyeon-selfhost/traefik/_v/traefik/users
+          type: DirectoryOrCreate
+      - name: traefik-cert
+        hostPath:
+          path: /workspace/hansanghyeon-selfhost/traefik/_v/traefik/cert
+          type: DirectoryOrCreate
+
+  additionalVolumeMounts:
+    - name: traefik-acme
+      mountPath: /acme
+    - name: traefik-logs
+      mountPath: /logs
+    - name: traefik-users
+      mountPath: /etc/traefik/users
+    - name: traefik-cert
+      mountPath: /cert
+
+  # 기존 환경처럼 노드 포트(80/443 등)를 직접 바인딩해 traffic-gateway/라우터가 포워딩하기 쉬운 형태로 운영
+  hostNetwork: true
+
+  # 서비스는 클러스터 내부 확인용으로만 사용
+  service:
+    type: ClusterIP
+
+  # chart 기본 web/websecure 포트를 실제 80/443로 맞춰서, configFile의 entryPoints(web/websecure)와 정합성을 유지
+  ports:
+    web:
+      port: 80
+      exposedPort: 80
+    websecure:
+      port: 443
+      exposedPort: 443
+      allowACMEByPass: true
+    traefik:
+      expose:
+        default: false
+
+  # 기존 파일 기반 설정을 그대로 주입
+  additionalArguments:
+    - --configFile=/etc/traefik/traefik.yaml
+
+  # 파일 프로바이더는 configFile에서 활성화하므로 chart 값은 비활성화(중복 플래그 방지)
+  providers:
+    file:
+      enabled: false
+
+  # 설정(ConfigMap) 주입: 기존 traefik/traefik.yaml + traefik/rules/*.yaml
+  volumes:
+    - name: traefik-static
+      type: configMap
+      mountPath: /etc/traefik
+    - name: traefik-rules
+      type: configMap
+      mountPath: /rules

@@ -1,0 +1,12 @@
+http:
+  routers:
+    vpn:
+      entryPoints:
+        - websecure
+      service: vpn
+      rule: Host(`vpn.hyeon.pro`) || Host(`vpn2.hyeon.pro`)
+  services:
+    vpn:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:51821"

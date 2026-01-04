@@ -1,0 +1,12 @@
+http:
+  routers:
+    code-server:
+      entryPoints:
+        - reinternals
+      service: code-server
+      rule: Host(`im.code`)
+  services:
+    code-server:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.10.204:8080"

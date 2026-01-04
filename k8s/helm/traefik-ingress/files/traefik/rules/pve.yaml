@@ -1,0 +1,16 @@
+http:
+  routers:
+    pve:
+      entryPoints:
+        - reinternals
+      service: pve
+      rule: Host(`im.pve`)
+  services:
+    pve:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.10.94:8006"
+        serversTransport: insecure-proxmox
+  serversTransports:
+    insecure-proxmox:
+      insecureSkipVerify: true

@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: traefik-ingress
+  namespace: argocd
+spec:
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: traefik
+  source:
+    repoURL: REPLACE_ME_GIT_REPO_URL
+    targetRevision: HEAD
+    # 이 레포(traefik)의 루트 기준 경로
+    path: k8s/helm/traefik-ingress
+    helm:
+      releaseName: traefik-ingress
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

@@ -1,0 +1,13 @@
+
+http:
+  routers:
+    218p:
+      entryPoints:
+        - websecure
+      service: 218p
+      rule: Host(`218p.hyeon.pro`)
+  services:
+    218p:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.10.160:5000"

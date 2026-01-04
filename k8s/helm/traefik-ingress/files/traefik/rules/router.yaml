@@ -1,0 +1,12 @@
+http:
+  routers:
+    synology-router:
+      entryPoints:
+        - reinternals
+      service: synology-router
+      rule: Host(`im.router`)
+  services:
+    synology-router:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.10.1:8000"

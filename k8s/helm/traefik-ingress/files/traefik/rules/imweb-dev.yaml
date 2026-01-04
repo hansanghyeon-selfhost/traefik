@@ -1,0 +1,12 @@
+http:
+  routers:
+    router:
+      entryPoints:
+        - reinternals
+      service: router
+      rule: Host(`im.imwebdev`)
+  services:
+    router:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.10.62:3000"

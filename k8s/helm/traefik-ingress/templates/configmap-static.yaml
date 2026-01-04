@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: traefik-static
+data:
+  traefik.yaml: |-
+{{ .Files.Get "files/traefik/traefik.yaml" | nindent 4 }}
